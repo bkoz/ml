@@ -5,8 +5,6 @@
 FROM docker.io/centos/python-36-centos7
 MAINTAINER Bob Kozdemba <bkozdemba@gmail.com>
 EXPOSE 8888 6006
-ENV OC_VERSION=3.10.53
-ENV ODO_VERSION=v0.0.13
     
 ### Setup user for build execution and application runtime
 ENV APP_ROOT=/opt/app-root
@@ -17,30 +15,29 @@ ENV PATH=${APP_ROOT}/bin:${PATH} HOME=${APP_ROOT}
 USER root
 
 # Install cuda.
-RUN yum -y install kernel-devel-$(uname -r) kernel-headers-$(uname -r) pciutils && yum clean all -y
+RUN yum -y update
+RUN yum -y install kernel-devel-3.10.0-957.el7.x86_64 kernel-headers-3.10.0-957.el7.x86_64 pciutils && yum clean all -y
 RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && yum clean all -y
-RUN yum -y install git wget bash-completion https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-10.0.130-1.x86_64.rpm && yum clean all -y
-RUN yum -y install cuda-9-0 && yum clean all -y
+RUN yum -y install git wget bash-completion https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-9.0.176-1.x86_64.rpm && yum clean all -y
+RUN yum -y install cuda && yum clean all -y
 
-COPY cuda/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so.7.4.1
-COPY cuda/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so.7
-COPY cuda/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so
+CMD echo "export PATH=/usr/local/cuda-9.0/bin${PATH:+:${PATH}}" >> /etc/profile.d/cuda90.sh
+CMD echo "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" >> /etc/profile.d/cuda90.sh
 
-#CMD ln -s /usr/local/cuda/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so.7
-#CMD ln -s /usr/local/cuda/lib64/libcudnn.so.7 /usr/local/cuda/lib64/libcudnn.so
+COPY 9.0/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so.7.4.1
+COPY 9.0/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so.7
+COPY 9.0/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so
+
 CMD ldconfig && echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/extras/CUPTI/lib64' >> /etc/profile.d/cuda90.sh 
 CMD source /etc/profile.d/cuda90.sh
 
 RUN easy_install -U pip
-RUN pip install --upgrade tensorflow-gpu matplotlib pillow scipy jupyter theano keras sklearn
-
-#RUN curl https://mirror.openshift.com/pub/openshift-v3/clients/${OC_VERSION}/linux/oc.tar.gz | tar zxf - -O > ${APP_ROOT}/bin/oc && \
-#    wget https://dl.bintray.com/odo/odo/latest/linux-amd64/odo -O ${APP_ROOT}/bin/odo && \    
-#    chmod u=rwx,g=rx,o=rx ${APP_ROOT}/bin/{oc,odo}
-
+# RUN pip install --upgrade tensorflow-gpu matplotlib pillow scipy jupyter theano keras sklearn
+RUN pip install --upgrade tensorflow-gpu
 
 ### Containers should NOT run as root as a good practice
-USER 1001
+# USER 1001
+USER root
 WORKDIR ${APP_ROOT}
 
 ### user name recognition at runtime w/ an arbitrary uid - for OpenShift deployments

@@ -4,4 +4,4 @@
 #
 docker build --rm=true --force-rm=true --tag koz/ml .
 
-# docker build --rm=true --force-rm=true --tag koz/ml-gpu --file=Dockerfile=gpu .
+# docker build --rm=true --force-rm=true --tag koz/ml-gpu --file=Dockerfile-gpu .
