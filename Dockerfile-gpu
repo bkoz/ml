@@ -2,7 +2,8 @@
 # Dockerfile for machine learning stack
 #
 #
-FROM docker.io/centos/python-36-centos7
+# FROM docker.io/centos/python-36-centos7
+FROM nvidia/cuda:9.0-cudnn7-runtime-centos7
 MAINTAINER Bob Kozdemba <bkozdemba@gmail.com>
 EXPOSE 8888 6006
     
@@ -14,30 +15,15 @@ ENV PATH=${APP_ROOT}/bin:${PATH} HOME=${APP_ROOT}
 
 USER root
 
-# Install cuda.
-RUN yum -y update
-RUN yum -y install kernel-devel-3.10.0-957.el7.x86_64 kernel-headers-3.10.0-957.el7.x86_64 pciutils && yum clean all -y
-RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && yum clean all -y
-RUN yum -y install git wget bash-completion https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-9.0.176-1.x86_64.rpm && yum clean all -y
-RUN yum -y install cuda && yum clean all -y
-
-CMD echo "export PATH=/usr/local/cuda-9.0/bin${PATH:+:${PATH}}" >> /etc/profile.d/cuda90.sh
-CMD echo "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" >> /etc/profile.d/cuda90.sh
-
-COPY 9.0/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so.7.4.1
-COPY 9.0/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so.7
-COPY 9.0/lib64/libcudnn.so.7.4.1 /usr/local/cuda/lib64/libcudnn.so
-
-CMD ldconfig && echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/extras/CUPTI/lib64' >> /etc/profile.d/cuda90.sh 
-CMD source /etc/profile.d/cuda90.sh
-
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+RUN yum -y install python2-pip python-devel libgomp gcc
 RUN easy_install -U pip
-# RUN pip install --upgrade tensorflow-gpu matplotlib pillow scipy jupyter theano keras sklearn
-RUN pip install --upgrade tensorflow-gpu
+RUN pip install --upgrade tensorflow-gpu matplotlib pillow scipy jupyter theano keras sklearn
+# RUN pip install --upgrade tensorflow-gpu 
 
 ### Containers should NOT run as root as a good practice
-# USER 1001
-USER root
+USER 1001
+# USER root
 WORKDIR ${APP_ROOT}
 
 ### user name recognition at runtime w/ an arbitrary uid - for OpenShift deployments
