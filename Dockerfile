@@ -20,7 +20,7 @@ USER root
 RUN yum -y install git wget bash-completion && yum clean all -y
 
 RUN easy_install -U pip
-RUN pip install --upgrade tensorflow matplotlib pillow scipy jupyter theano keras sklearn
+RUN pip install --upgrade tensorflow matplotlib pillow scipy jupyter theano keras sklearn scikit-image
 
 #RUN curl https://mirror.openshift.com/pub/openshift-v3/clients/${OC_VERSION}/linux/oc.tar.gz | tar zxf - -O > ${APP_ROOT}/bin/oc && \
 #    wget https://dl.bintray.com/odo/odo/latest/linux-amd64/odo -O ${APP_ROOT}/bin/odo && \    

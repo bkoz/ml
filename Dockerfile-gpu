@@ -18,7 +18,7 @@ USER root
 RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 RUN yum -y install python2-pip python-devel libgomp gcc
 RUN easy_install -U pip
-RUN pip install --upgrade tensorflow-gpu matplotlib pillow scipy jupyter theano keras sklearn
+RUN pip install --upgrade tensorflow-gpu matplotlib pillow scipy jupyter theano keras sklearn scikit-image
 # RUN pip install --upgrade tensorflow-gpu 
 
 ### Containers should NOT run as root as a good practice
