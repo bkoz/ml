@@ -15,11 +15,15 @@ ENV PATH=${APP_ROOT}/bin:${PATH} HOME=${APP_ROOT}
 
 USER root
 
-RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-RUN yum -y install python2-pip python-devel libgomp gcc
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && yum clean all
+RUN yum -y install centos-release-scl && yum clean all
+RUN yum-config-manager --enable centos-sclo-rh-testing
+RUN yum -y install python2-pip python-devel libgomp gcc rh-python36 && yum clean all
+RUN scl enable rh-python36 bash
+
 RUN easy_install -U pip
-RUN pip install --upgrade tensorflow-gpu matplotlib pillow scipy jupyter theano keras sklearn scikit-image
-# RUN pip install --upgrade tensorflow-gpu 
+# RUN pip install --upgrade tensorflow-gpu matplotlib pillow scipy jupyter theano keras sklearn scikit-image
+RUN pip install --upgrade tensorflow-gpu jupyter
 
 ### Containers should NOT run as root as a good practice
 USER 1001
