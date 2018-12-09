@@ -20,7 +20,7 @@ USER root
 RUN yum -y install git wget bash-completion && yum clean all -y
 
 RUN easy_install -U pip
-RUN pip install --upgrade tensorflow matplotlib pillow scipy jupyter theano keras sklearn scikit-image
+RUN pip install --upgrade tensorflow matplotlib pillow scipy jupyter 
 
 #RUN curl https://mirror.openshift.com/pub/openshift-v3/clients/${OC_VERSION}/linux/oc.tar.gz | tar zxf - -O > ${APP_ROOT}/bin/oc && \
 #    wget https://dl.bintray.com/odo/odo/latest/linux-amd64/odo -O ${APP_ROOT}/bin/odo && \    
@@ -28,7 +28,7 @@ RUN pip install --upgrade tensorflow matplotlib pillow scipy jupyter theano kera
 
 
 ### Containers should NOT run as root as a good practice
-USER 1001
+USER 14045
 WORKDIR ${APP_ROOT}
 
 ### user name recognition at runtime w/ an arbitrary uid - for OpenShift deployments
