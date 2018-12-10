@@ -1,0 +1,29 @@
+#
+# Dockerfile for Octave machine learning stack
+#
+#
+FROM docker.io/centos/python-36-centos7
+MAINTAINER Bob Kozdemba <bkozdemba@gmail.com>
+# EXPOSE 8888 6006
+    
+### Setup user for build execution and application runtime
+ENV APP_ROOT=/opt/app-root
+RUN mkdir -p ${APP_ROOT}/{bin,src} && \
+    chmod -R u+x ${APP_ROOT}/bin && chgrp -R 0 ${APP_ROOT} && chmod -R g=u ${APP_ROOT}
+ENV PATH=${APP_ROOT}/bin:${PATH} HOME=${APP_ROOT}
+
+USER root
+
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && yum clean all -y
+RUN yum -y install git wget bash-completion octave octave-doc && yum clean all -y
+
+### Containers should NOT run as root as a good practice
+USER 14045
+WORKDIR ${APP_ROOT}
+
+### user name recognition at runtime w/ an arbitrary uid - for OpenShift deployments
+# ENTRYPOINT [ "uid_entrypoint" ]
+VOLUME ${APP_ROOT}/logs ${APP_ROOT}/data
+
+CMD /usr/bin/tail -f /dev/null
+
